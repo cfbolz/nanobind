@@ -48,11 +48,6 @@ jobs:
         ./pypy-nightly/bin/pypy -m ensurepip
         ./pypy-nightly/bin/pypy -m pip install pytest pytest-github-actions-annotate-failures typing_extensions
 
-    - name: Install NumPy
-      if: ${{ !startsWith(matrix.python, 'pypy') && !contains(matrix.python, 'alpha') }}
-      run: |
-        ./pypy-nightly/bin/pypy -m pip install numpy scipy
-
     - name: Configure
       run: >
         cmake -S . -B build -DNB_TEST_STABLE_ABI=ON -DNB_TEST_SHARED_BUILD="$(./pypy-nightly/bin/pypy -c 'import sys; print(int(sys.version_info.minor>=11))')"
