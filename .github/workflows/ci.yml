@@ -20,8 +20,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ['ubuntu-latest', 'windows-2022', 'macos-latest']
-        python: ['3.8', '3.9', '3.10', '3.11', '3.12', '3.13.0-alpha.3', 'pypy3.9-v7.3.15', 'pypy3.10-v7.3.15']
+        os: ['ubuntu-latest']
+        python: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31']
 
     name: "Python ${{ matrix.python }} / ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
@@ -31,36 +31,98 @@ jobs:
       with:
         submodules: true
 
-    - name: Setup Python ${{ matrix.python }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python }}
-        cache: 'pip'
+    - name: download lldebug pypy
+      run: |
+        wget https://cfbolz.de/stuff/pypy-nightly.tar.bz2
+        tar xf pypy-nightly.tar.bz2
+        ./pypy-nightly/bin/pypy -V
+        ./pypy-nightly/bin/pypy -m venv venv
+        . ./venv/bin/activate
+        python -V
 
     - name: Install the latest CMake
       uses: lukka/get-cmake@latest
 
     - name: Install Eigen
       if: matrix.os == 'ubuntu-latest'
-      run: sudo apt-get -y install libeigen3-dev
+      run: sudo apt-get -y install libeigen3-dev gdb glibc-tools
 
     - name: Install PyTest
       run: |
+        . ./venv/bin/activate
+        python -m ensurepip
         python -m pip install pytest pytest-github-actions-annotate-failures typing_extensions
 
-    - name: Install NumPy
-      if: ${{ !startsWith(matrix.python, 'pypy') && !contains(matrix.python, 'alpha') }}
-      run: |
-        python -m pip install numpy scipy
-
     - name: Configure
-      run: >
-        cmake -S . -B build -DNB_TEST_STABLE_ABI=ON -DNB_TEST_SHARED_BUILD="$(python3 -c 'import sys; print(int(sys.version_info.minor>=11))')"
+      run: |
+        . ./venv/bin/activate
+        cmake -S . -B build -DNB_TEST_STABLE_ABI=ON -DNB_TEST_SHARED_BUILD="$(python -c 'import sys; print(int(sys.version_info.minor>=11))')"
 
     - name: Build C++
-      run: cmake --build build -j 2
+      run: |
+        . ./venv/bin/activate
+        cmake --build build -j 2
+
+    - name: Run tests in gdb
+      run: |
+        . ./venv/bin/activate
+        find -name "*.pyc" -delete
+        cd build;
+        gdb -ex "set confirm off" -ex "set pagination off" -ex "set debuginfod enabled off" -ex run -ex where -ex quit --args  python -m pytest
+
+    - name: Set cores to get stored in /cores
+      run: |
+        sudo mkdir /cores
+        sudo chmod 777 /cores
+        # Core filenames will be of the form executable.pid.timestamp:
+        sudo bash -c 'echo "/cores/%e.%p.%t" > /proc/sys/kernel/core_pattern'
 
     - name: Run tests
-      run: >
+      run: |
+        . ./venv/bin/activate
+        find -name "*.pyc" -delete
+        cd build
+        ulimit -c unlimited
+        PYPYLOG=jit:out python -m pytest
+
+    - name: Setup tmate session
+      if: ${{ failure() }}
+      uses: mxschmitt/action-tmate@v3
+      with:
+        limit-access-to-actor: true
+
+    - name: upload coredump
+      uses: actions/upload-artifact@v3
+      if: ${{ failure() }}  # Run only if something went wrong
+      with:
+        name: cores
+        path: /cores
+
+    - name: upload out file
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: out-${{ matrix.python }}
+        path: build/out
+
+    - name: Run tests without jit
+      run: |
+        . ./venv/bin/activate
+        find -name "*.pyc" -delete
         cd build;
-        python -m pytest
+        python -X faulthandler --jit off -m pytest
+
+    - name: Run tests in gdb
+      run: |
+        . ./venv/bin/activate
+        find -name "*.pyc" -delete
+        cd build;
+        gdb -ex "set confirm off" -ex "set pagination off" -ex "set debuginfod enabled off" -ex run -ex where -ex quit --args  python -m pytest
+
+    - name: Run tests in gdb no jit
+      run: |
+        . ./venv/bin/activate
+        find -name "*.pyc" -delete
+        cd build;
+        gdb -ex "set confirm off" -ex "set pagination off" -ex "set debuginfod enabled off" -ex run -ex where -ex quit --args  python --jit off -m pytest
+
