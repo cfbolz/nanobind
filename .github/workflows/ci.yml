@@ -63,6 +63,13 @@ jobs:
         . ./venv/bin/activate
         cmake --build build -j 2
 
+    - name: Run tests in gdb
+      run: |
+        . ./venv/bin/activate
+        find -name "*.pyc" -delete
+        cd build;
+        gdb -ex "set confirm off" -ex "set pagination off" -ex "set debuginfod enabled off" -ex run -ex where -ex quit --args  python -m pytest
+
     - name: Run tests
       run: |
         . ./venv/bin/activate
