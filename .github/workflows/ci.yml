@@ -34,7 +34,7 @@ jobs:
     - name: download lldebug pypy
       run: |
         wget https://cfbolz.de/stuff/pypy-nightly.tar.xz
-        tar xf pypy-lldebug-nightly.tar.xz
+        tar xf pypy-nightly.tar.xz
         ./pypy-nightly/bin/pypy -V
         ./pypy-nightly/bin/pypy -m venv venv
         . ./venv/bin/activate
