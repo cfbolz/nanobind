@@ -85,6 +85,12 @@ jobs:
         ulimit -c unlimited
         PYPYLOG=jit:out python -m pytest
 
+    - name: Setup tmate session
+      if: ${{ failure() }}
+      uses: mxschmitt/action-tmate@v3
+      with:
+        limit-access-to-actor: true
+
     - name: upload coredump
       uses: actions/upload-artifact@v3
       if: ${{ failure() }}  # Run only if something went wrong
