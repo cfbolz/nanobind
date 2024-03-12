@@ -68,7 +68,7 @@ jobs:
         . ./venv/bin/activate
         find -name "*.pyc" -delete
         cd build
-        python -X faulthandler -m pytest
+        PYPYLOG=jit:- python -X faulthandler -m pytest
 
     - name: Run tests without jit
       run: |
