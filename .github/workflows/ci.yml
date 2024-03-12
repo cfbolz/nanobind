@@ -66,24 +66,28 @@ jobs:
     - name: Run tests
       run: |
         . ./venv/bin/activate
+        find -name "*.pyc" -delete
         cd build
         python -X faulthandler -m pytest
 
     - name: Run tests without jit
       run: |
         . ./venv/bin/activate
+        find -name "*.pyc" -delete
         cd build;
         python -X faulthandler --jit off -m pytest
 
     - name: Run tests in gdb
       run: |
         . ./venv/bin/activate
+        find -name "*.pyc" -delete
         cd build;
         gdb -ex "set confirm off" -ex "set pagination off" -ex "set debuginfod enabled off" -ex run -ex where -ex quit --args  python -m pytest
 
     - name: Run tests in gdb no jit
       run: |
         . ./venv/bin/activate
+        find -name "*.pyc" -delete
         cd build;
         gdb -ex "set confirm off" -ex "set pagination off" -ex "set debuginfod enabled off" -ex run -ex where -ex quit --args  python --jit off -m pytest
 
