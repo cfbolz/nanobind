@@ -70,12 +70,27 @@ jobs:
         cd build;
         gdb -ex "set confirm off" -ex "set pagination off" -ex "set debuginfod enabled off" -ex run -ex where -ex quit --args  python -m pytest
 
+    - name: Set cores to get stored in /cores
+      run: |
+        sudo mkdir /cores
+        sudo chmod 777 /cores
+        # Core filenames will be of the form executable.pid.timestamp:
+        sudo bash -c 'echo "/cores/%e.%p.%t" > /proc/sys/kernel/core_pattern'
+
     - name: Run tests
       run: |
         . ./venv/bin/activate
         find -name "*.pyc" -delete
         cd build
-        PYPYLOG=jit:out catchsegv python -X faulthandler -m pytest
+        ulimit -c unlimited
+        PYPYLOG=jit:out python -X faulthandler -m pytest
+
+    - name: upload coredump
+      uses: actions/upload-artifact@v3
+      if: ${{ failure() }}  # Run only if something went wrong
+      with:
+        name: cores
+        path: /cores
 
     - name: upload out file
       if: always()
