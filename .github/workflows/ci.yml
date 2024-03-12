@@ -33,7 +33,7 @@ jobs:
 
     - name: Install Eigen
       if: matrix.os == 'ubuntu-latest'
-      run: sudo apt-get -y install libeigen3-dev gdb glibc-tools gcc make libffi-dev pkg-config zlib1g-dev libbz2-dev libsqlite3-dev libncurses5-dev libexpat1-dev libssl-dev libgdbm-dev tk-dev libgc-dev python-cffi liblzma-dev libncursesw5-dev
+      run: sudo apt-get -y install libeigen3-dev gdb glibc-tools gcc make libffi-dev pkg-config zlib1g-dev libbz2-dev libsqlite3-dev libncurses5-dev libexpat1-dev libssl-dev libgdbm-dev tk-dev libgc-dev liblzma-dev libncursesw5-dev
 
     - name: download lldebug pypy
       run: |
