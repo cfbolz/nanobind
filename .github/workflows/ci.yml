@@ -63,17 +63,11 @@ jobs:
         . ./venv/bin/activate
         cmake --build build -j 2
 
-    - name: Run tests
-      run: |
-        . ./venv/bin/activate
-        cd build
-        python -m pytest
-
-    - name: Run tests without jit
+    - name: Run tests in gdb no jit
       run: |
         . ./venv/bin/activate
         cd build;
-        python --jit off -m pytest
+        gdb -ex "set confirm off" -ex "set pagination off" -ex "set debuginfod enabled off" -ex run -ex where -ex quit --args  python --jit off -m pytest
 
     - name: Run tests in gdb
       run: |
