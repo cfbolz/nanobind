@@ -35,6 +35,8 @@ jobs:
       run: |
         wget https://buildbot.pypy.org/pypy/pypy-lldebug-nightly.tar.bz2
         tar xf pypy-lldebug-nightly.tar.bz2
+        python -V # shouldn't be one?
+        ./pypy-nightly/bin/pypy -V
 
     - name: Install the latest CMake
       uses: lukka/get-cmake@latest
