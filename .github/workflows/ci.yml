@@ -31,10 +31,6 @@ jobs:
       with:
         submodules: true
 
-    - name: Install Eigen
-      if: matrix.os == 'ubuntu-latest'
-      run: sudo apt-get -y install libeigen3-dev gdb glibc-tools gcc make libffi-dev pkg-config zlib1g-dev libbz2-dev libsqlite3-dev libncurses5-dev libexpat1-dev libssl-dev libgdbm-dev tk-dev libgc-dev liblzma-dev libncursesw5-dev
-
     - name: download lldebug pypy
       run: |
         wget https://cfbolz.de/stuff/pypy-nightly.tar.bz2
@@ -47,6 +43,9 @@ jobs:
     - name: Install the latest CMake
       uses: lukka/get-cmake@latest
 
+    - name: Install Eigen
+      if: matrix.os == 'ubuntu-latest'
+      run: sudo apt-get -y install libeigen3-dev gdb glibc-tools
 
     - name: Install PyTest
       run: |
