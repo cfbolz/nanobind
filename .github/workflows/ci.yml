@@ -63,6 +63,18 @@ jobs:
         . ./venv/bin/activate
         cmake --build build -j 2
 
+    - name: Run tests
+      run: |
+        . ./venv/bin/activate
+        cd build
+        python -X faulthandler -m pytest
+
+    - name: Run tests without jit
+      run: |
+        . ./venv/bin/activate
+        cd build;
+        python -X faulthandler --jit off -m pytest
+
     - name: Run tests in gdb
       run: |
         . ./venv/bin/activate
