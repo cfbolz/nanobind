@@ -83,7 +83,7 @@ jobs:
         find -name "*.pyc" -delete
         cd build
         ulimit -c unlimited
-        PYPYLOG=jit:out python -X faulthandler -m pytest
+        PYPYLOG=jit:out python -m pytest
 
     - name: upload coredump
       uses: actions/upload-artifact@v3
