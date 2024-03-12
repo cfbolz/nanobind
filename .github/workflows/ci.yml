@@ -33,8 +33,8 @@ jobs:
 
     - name: download lldebug pypy
       run: |
-        wget https://buildbot.pypy.org/pypy/pypy-lldebug-nightly.tar.bz2
-        tar xf pypy-lldebug-nightly.tar.bz2
+        wget https://cfbolz.de/stuff/pypy-nightly.tar.xz
+        tar xf pypy-lldebug-nightly.tar.xz
         ./pypy-nightly/bin/pypy -V
         ./pypy-nightly/bin/pypy -m venv venv
         . ./venv/bin/activate
