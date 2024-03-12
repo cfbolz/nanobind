@@ -82,7 +82,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: out-${{ matrix.python }}
-        path: out
+        path: build/out
 
     - name: Run tests without jit
       run: |
