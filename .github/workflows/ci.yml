@@ -45,7 +45,7 @@ jobs:
 
     - name: Install Eigen
       if: matrix.os == 'ubuntu-latest'
-      run: sudo apt-get -y install libeigen3-dev gdb
+      run: sudo apt-get -y install libeigen3-dev gdb glibc-tools
 
     - name: Install PyTest
       run: |
@@ -75,7 +75,7 @@ jobs:
         . ./venv/bin/activate
         find -name "*.pyc" -delete
         cd build
-        PYPYLOG=jit:out python -X faulthandler -m pytest
+        PYPYLOG=jit:out catchsegv python -X faulthandler -m pytest
 
     - name: upload out file
       if: always()
