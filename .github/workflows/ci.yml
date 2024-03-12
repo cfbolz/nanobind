@@ -52,7 +52,7 @@ jobs:
 
     - name: Configure
       run: >
-        cmake -S . -B build -DNB_TEST_STABLE_ABI=ON -DNB_TEST_SHARED_BUILD="$(./pypy-nightly/bin/pypy -c 'import sys; print(int(sys.version_info.minor>=11))')"
+        cmake -S . -B build -DNB_TEST_STABLE_ABI=ON -DPython_EXECUTABLE="pypy-nightly/bin/pypy" -DNB_TEST_SHARED_BUILD="$(./pypy-nightly/bin/pypy -c 'import sys; print(int(sys.version_info.minor>=11))')"
 
     - name: Build C++
       run: cmake --build build -j 2
