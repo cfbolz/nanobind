@@ -49,27 +49,34 @@ jobs:
 
     - name: Install PyTest
       run: |
+        . ./venv/bin/activate
         python -m ensurepip
         python -m pip install pytest pytest-github-actions-annotate-failures typing_extensions
 
     - name: Configure
       run: >
+        . ./venv/bin/activate
         cmake -S . -B build -DNB_TEST_STABLE_ABI=ON -DNB_TEST_SHARED_BUILD="$(python -c 'import sys; print(int(sys.version_info.minor>=11))')"
 
     - name: Build C++
-      run: cmake --build build -j 2
+      run: |
+        . ./venv/bin/activate
+        cmake --build build -j 2
 
     - name: Run tests
       run: >
+        . ./venv/bin/activate
         cd build;
         python -m pytest
 
     - name: Run tests without jit
       run: >
+        . ./venv/bin/activate
         cd build;
         python --jit off -m pytest
 
     - name: Run tests in gdb
       run: >
+        . ./venv/bin/activate
         cd build;
         gdb -ex "set confirm off" -ex "set pagination off" -ex "set debuginfod enabled off" -ex run -ex where -ex quit --args  python -m pytest
